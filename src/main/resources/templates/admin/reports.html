@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Driving School</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .report-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .report-card .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .report-card h2 {
+            color: #495057;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .report-card .description {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .report-card .query-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .report-card .btn {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>📊 Reports & Analytics</h1>
+        <p class="subtitle">Complex SQL Queries with Subqueries</p>
+    </div>
+
+    <!-- User Bar -->
+    <div class="user-bar">
+        <div>
+            <a href="/admin/dashboard" class="btn btn-primary">← Back to Dashboard</a>
+        </div>
+        <a href="/logout" class="btn btn-danger">🚪 Logout</a>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="reports-grid">
+        <!-- Report 1: Above Average Sessions -->
+        <div class="report-card">
+            <div class="icon">🎯</div>
+            <span class="query-badge">COMPLEX QUERY #1</span>
+            <h2>Trainees with Above-Average Sessions</h2>
+            <p class="description">
+                Find trainees who have completed more practical sessions than the average.
+                Uses nested subqueries to calculate and compare with average session count.
+            </p>
+            <a href="/admin/reports/above-average-sessions" class="btn btn-primary">
+                Generate Report →
+            </a>
+        </div>
+
+        <!-- Report 2: Top Instructors -->
+        <div class="report-card">
+            <div class="icon">👨‍🏫</div>
+            <span class="query-badge">COMPLEX QUERY #2</span>
+            <h2>Top Instructors by Pass Rate</h2>
+            <p class="description">
+                Rank instructors by student exam pass rate.
+                Uses multiple subqueries to count students and passed exams per instructor.
+            </p>
+            <a href="/admin/reports/top-instructors" class="btn btn-primary">
+                Generate Report →
+            </a>
+        </div>
+
+        <!-- Report 3: Most Active Instructors -->
+        <div class="report-card">
+            <div class="icon">👨‍🏫</div>
+            <span class="query-badge">COMPLEX QUERY #3</span>
+            <h2>Most Active Instructors (by Sessions)</h2>
+            <p class="description">
+                Find instructors who have conducted more sessions than average.
+                Uses nested subqueries to calculate average instructor session count for comparison.
+            </p>
+            <a href="/admin/reports/most-active-instructors" class="btn btn-primary">
+                Generate Report →
+            </a>
+        </div>
+
+        <!-- Report 4: Behind Schedule -->
+        <div class="report-card">
+            <div class="icon">⏰</div>
+            <span class="query-badge">COMPLEX QUERY #4</span>
+            <h2>Trainees Behind Schedule</h2>
+            <p class="description">
+                Identify active trainees with fewer completed sessions than average for their enrollment period (30+ days).
+                Uses nested subqueries with date calculations to compare session completion rates.
+            </p>
+            <a href="/admin/reports/behind-schedule" class="btn btn-primary">
+                Generate Report →
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

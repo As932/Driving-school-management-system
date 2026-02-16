@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Exams - Driving School</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #11998e;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-theoretical {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .badge-practical {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .badge-scheduled {
+            background: #007bff;
+            color: white;
+        }
+
+        .badge-passed {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-failed {
+            background: #dc3545;
+            color: white;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📝 My Exams</h1>
+        <p>Exam history for <strong th:text="${trainee.firstName + ' ' + trainee.lastName}">Trainee</strong></p>
+    </div>
+
+    <div class="nav-bar">
+        <div>
+            <a href="/trainee/dashboard" class="btn btn-primary">← Back to Dashboard</a>
+        </div>
+        <a href="/logout" class="btn btn-danger">🚪 Logout</a>
+    </div>
+
+    <div class="card">
+        <div th:if="${not #lists.isEmpty(exams)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="exam : ${exams}">
+                    <td th:text="${#temporals.format(exam.scheduledDate, 'dd-MM-yyyy')}">01-01-2026</td>
+                    <td>
+                        <span class="badge badge-theoretical" th:if="${exam.examType == 'Theoretical'}" th:text="${exam.examType}">Theoretical</span>
+                        <span class="badge badge-practical" th:if="${exam.examType == 'Practical'}" th:text="${exam.examType}">Practical</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-scheduled" th:if="${exam.status == 'Scheduled'}" th:text="${exam.status}">Scheduled</span>
+                        <span class="badge badge-passed" th:if="${exam.status == 'Passed'}" th:text="${exam.status}">Passed</span>
+                        <span class="badge badge-failed" th:if="${exam.status == 'Failed'}" th:text="${exam.status}">Failed</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="no-data" th:if="${#lists.isEmpty(exams)}">
+            <h3>📝 No Exams Yet</h3>
+            <p>You don't have any exams scheduled yet.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

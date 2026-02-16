@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${reportTitle} + ' - Driving School'">Report - Driving School</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+
+        .summary-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-box strong {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1 th:text="'📊 ' + ${reportTitle}">Report Title</h1>
+        <p class="subtitle">Complex SQL Query with Subqueries</p>
+    </div>
+
+    <!-- User Bar -->
+    <div class="user-bar">
+        <div>
+            <a href="/admin/reports" class="btn btn-secondary">← Back to Reports</a>
+            <a href="/admin/dashboard" class="btn btn-primary">Dashboard</a>
+        </div>
+        <a href="/logout" class="btn btn-danger">🚪 Logout</a>
+    </div>
+
+    <!-- Results -->
+    <div class="card">
+        <div class="summary-box">
+            <strong th:text="${results.size()}">0</strong> results found
+        </div>
+
+        <!-- Above Average Sessions Results -->
+        <div th:if="${reportType == 'above-average-sessions' and not #lists.isEmpty(results)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Trainee Name</th>
+                    <th>Total Sessions</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="result : ${results}">
+                    <td th:text="${result.FIRSTNAME} + ' ' + ${result.LASTNAME}">Name</td>
+                    <td><strong th:text="${result.TOTALSESSIONS} + ' sessions'">0 sessions</strong></td>
+                    <td>
+                        <span class="badge badge-success">Above Average</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Instructors Results -->
+        <div th:if="${reportType == 'top-instructors' and not #lists.isEmpty(results)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Instructor Name</th>
+                    <th>Total Students</th>
+                    <th>Passed Exams</th>
+                    <th>Pass Rate</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="result : ${results}">
+                    <td th:text="${result.FIRSTNAME} + ' ' + ${result.LASTNAME}">Name</td>
+                    <td th:text="${result.TOTALSTUDENTS}">0</td>
+                    <td th:text="${result.PASSEDEXAMS}">0</td>
+                    <td>
+                                <span class="badge badge-success"
+                                      th:text="${#numbers.formatDecimal(result.PASSRATE, 1, 1)} + '%'">
+                                    0%
+                                </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Most Active Instructors Results -->
+        <div th:if="${reportType == 'most-active-instructors' and not #lists.isEmpty(results)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Instructor Name</th>
+                    <th>Session Count</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="result : ${results}">
+                    <td th:text="${result.BRAND} + ' ' + ${result.MODEL}">Instructor</td>
+                    <td><strong th:text="${result.SESSIONCOUNT} + ' sessions'">0 sessions</strong></td>
+                    <td>
+                        <span class="badge badge-info">Above Average</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Behind Schedule Results -->
+        <div th:if="${reportType == 'behind-schedule' and not #lists.isEmpty(results)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Trainee Name</th>
+                    <th>Days Enrolled</th>
+                    <th>Completed Sessions</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="result : ${results}">
+                    <td th:text="${result.FIRSTNAME} + ' ' + ${result.LASTNAME}">Name</td>
+                    <td th:text="${result.DAYSENROLLED} + ' days'">0 days</td>
+                    <td th:text="${result.COMPLETEDSESSIONS} + ' sessions'">0 sessions</td>
+                    <td>
+                        <span class="badge badge-warning">Behind Schedule</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- No Data -->
+        <div class="no-data" th:if="${#lists.isEmpty(results)}">
+            <h3>No Results Found</h3>
+            <p>No data matches the criteria for this report.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

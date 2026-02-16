@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${formMode == 'add' ? 'Schedule New Session' : 'Edit Session'}">Session Form</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; }
+        header { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #333; padding: 30px; }
+        h1 { font-size: 28px; margin-bottom: 10px; }
+        .content { padding: 30px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        label { font-weight: 600; margin-bottom: 8px; color: #495057; font-size: 14px; }
+        input, select, textarea { padding: 12px; border: 2px solid #dee2e6; border-radius: 6px; font-size: 14px; transition: border-color 0.3s; font-family: 'Segoe UI', sans-serif; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #84fab0; }
+        textarea { resize: vertical; min-height: 100px; }
+        .required::after { content: ' *'; color: #dc3545; }
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s; }
+        .btn-primary { background: #84fab0; color: #333; }
+        .btn-primary:hover { background: #6ee89d; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(132, 250, 176, 0.4); }
+        .btn-secondary { background: #6c757d; color: white; }
+        .form-actions { display: flex; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6; }
+        .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; }
+        .alert-error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .help-text { font-size: 12px; color: #6c757d; margin-top: 5px; }
+        .section-title { grid-column: 1 / -1; font-size: 18px; font-weight: 600; color: #495057; margin: 10px 0; }
+        .trainee-selector { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .trainee-checkbox { display: flex; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 6px; }
+        .trainee-checkbox input[type="checkbox"] { margin-right: 8px; width: 18px; height: 18px; cursor: pointer; }
+        .trainee-checkbox label { margin: 0; cursor: pointer; font-weight: 500; }
+        #theoreticalTraineeSection { display: none; }
+        #practicalTraineeSection { display: none; }
+    </style>
+    <script>
+        function toggleTraineeSection() {
+            const sessionType = document.getElementById('sessionType').value;
+            const theoreticalSection = document.getElementById('theoreticalTraineeSection');
+            const practicalSection = document.getElementById('practicalTraineeSection');
+
+            if (sessionType === 'Theoretical') {
+                theoreticalSection.style.display = 'block';
+                practicalSection.style.display = 'none';
+                // Remove required from practical trainee
+                document.getElementById('traineeId').removeAttribute('required');
+            } else if (sessionType === 'Practical') {
+                theoreticalSection.style.display = 'none';
+                practicalSection.style.display = 'block';
+                // Add required to practical trainee
+                document.getElementById('traineeId').setAttribute('required', 'required');
+            } else {
+                theoreticalSection.style.display = 'none';
+                practicalSection.style.display = 'none';
+            }
+        }
+
+        // Call on page load to set initial state
+        window.onload = function() {
+            toggleTraineeSection();
+        };
+    </script>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1 th:text="${formMode == 'add' ? '➕ Schedule New Session' : '✏️ Edit Session'}">Session Form</h1>
+        <p th:text="${formMode == 'add' ? 'Create a practical or theoretical session' : 'Update session information'}"></p>
+    </header>
+
+    <div class="content">
+        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+        <form th:action="${formMode == 'add' ? '/admin/sessions/add' : '/admin/sessions/edit/' + trainingSession.sessionId}"
+              method="post"
+              th:object="${trainingSession}">
+
+            <!-- Session Information -->
+            <div class="section-title">📅 Session Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="required" for="sessionType">Session Type</label>
+                    <select id="sessionType" th:field="*{sessionType}" required onchange="toggleTraineeSection()">
+                        <option value="">Select type</option>
+                        <option value="Practical">Practical (1-to-1)</option>
+                        <option value="Theoretical">Theoretical (Group)</option>
+                    </select>
+                    <div class="help-text">Practical: 1 trainee | Theoretical: Multiple trainees</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required" for="instructorId">Instructor</label>
+                    <select id="instructorId" th:field="*{instructorId}" required>
+                        <option value="">Select instructor</option>
+                        <option th:each="instructor : ${instructors}"
+                                th:value="${instructor.instructorId}"
+                                th:text="${instructor.firstName + ' ' + instructor.lastName}">
+                            Instructor Name
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="required" for="startDateTime">Start Date & Time</label>
+                    <input type="datetime-local"
+                           id="startDateTime"
+                           name="startDateTime"
+                           th:value="${trainingSession.startDateTime != null ? #temporals.format(trainingSession.startDateTime, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label class="required" for="endDateTime">End Date & Time</label>
+                    <input type="datetime-local"
+                           id="endDateTime"
+                           name="endDateTime"
+                           th:value="${trainingSession.endDateTime != null ? #temporals.format(trainingSession.endDateTime, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                           required>
+                    <div class="help-text">End must be after start</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required" for="status">Status</label>
+                    <select id="status" th:field="*{status}" required>
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="instructorFeedback">Instructor Feedback</label>
+                    <textarea id="instructorFeedback"
+                              th:field="*{instructorFeedback}"
+                              placeholder="Add feedback about this session (optional)..."></textarea>
+                    <div class="help-text">Feedback is typically added after session completion</div>
+                </div>
+            </div>
+
+            <!-- Practical Session - Single Trainee -->
+            <div id="practicalTraineeSection">
+                <div class="section-title">👤 Trainee (Practical Session)</div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="required" for="traineeId">Select Trainee</label>
+                        <select id="traineeId" th:field="*{traineeId}">
+                            <option value="">Select trainee</option>
+                            <option th:each="trainee : ${trainees}"
+                                    th:value="${trainee.traineeId}"
+                                    th:text="${trainee.firstName + ' ' + trainee.lastName + ' (' + trainee.licenseCategory + ')'}">
+                                Trainee Name
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theoretical Session - Multiple Trainees -->
+            <div id="theoreticalTraineeSection">
+                <div class="section-title">👥 Trainees (Theoretical Session)</div>
+                <div class="form-group full-width">
+                    <label>Select Trainees (at least one required)</label>
+                    <div class="trainee-selector">
+                        <div class="trainee-checkbox" th:each="trainee : ${trainees}">
+                            <input type="checkbox"
+                                   name="traineeIds"
+                                   th:value="${trainee.traineeId}"
+                                   th:id="'trainee_' + ${trainee.traineeId}"
+                                   th:checked="${enrolledTraineeIds != null && #lists.contains(enrolledTraineeIds, trainee.traineeId)}">
+                            <label th:for="'trainee_' + ${trainee.traineeId}"
+                                   th:text="${trainee.firstName + ' ' + trainee.lastName}">Trainee</label>
+                        </div>
+                    </div>
+                    <div class="help-text">Select all trainees who will attend this theoretical session</div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span th:text="${formMode == 'add' ? 'Schedule Session' : 'Save Changes'}">Submit</span>
+                </button>
+                <a href="/admin/sessions" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
